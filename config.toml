@@ -1,0 +1,8 @@
+[clients]
+    [clients.ohjahz7Loh0daid5Chiedeejiex8ahcu]
+    dns="foo.bar.com"
+    name="foo"
+
+    [clients.Uth0phuchai0itheish3Oogheyiethae]
+    dns="bar.foo.com"
+    token="bar"

@@ -1,0 +1,15 @@
+# Gopkg.toml example
+#
+# Refer to https://golang.github.io/dep/docs/Gopkg.toml.html
+# for detailed Gopkg.toml documentation.
+#
+required = ["github.com/BurntSushi/toml"]
+ignored = []
+
+[[constraint]]
+  name = "github.com/BurntSushi/toml"
+  version = "^0.3.1"
+
+[prune]
+  go-tests = true
+  unused-packages = true
