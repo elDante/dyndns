@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 )
@@ -20,6 +22,8 @@ type ConfigClient struct {
 type Config struct {
 	Clients map[string]ConfigClient
 }
+
+var config Config
 
 func parseConfig(configPath string) Config {
 	var config Config
@@ -38,14 +42,27 @@ func parseConfig(configPath string) Config {
 	return config
 }
 
+func handler(w http.ResponseWriter, r *http.Request) {
+	if token, hasToken := r.Header["Access-Token"]; hasToken {
+		if client, isClient := config.Clients[token[0]]; isClient {
+			address := strings.Split(r.RemoteAddr, ":")[0]
+			fmt.Fprintf(w, "Will generate new record %s:%s\n", client.DNS, address)
+		} else {
+			fmt.Fprintf(w, "No client found %s", token)
+		}
+	} else {
+		fmt.Fprintf(w, "Go Away!")
+	}
+}
+
 func main() {
 	configPath := flag.String("config", "config.toml", "Path to TOML config")
 
 	flag.Parse()
 
-	config := parseConfig(*configPath)
+	config = parseConfig(*configPath)
 
-	for token, data := range config.Clients {
-		fmt.Println("Client name:", token, "Client token:", data.DNS)
-	}
+	fmt.Println("Total clients ", len(config.Clients))
+	http.HandleFunc("/", handler)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
